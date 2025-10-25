@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Laser – Technologie Kachel Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ---------- Design Tokens (du kannst sie später in :root auslagern) ---------- */
+    :root {
+      --color-bg: #F7FAFB;
+      --color-bg-tile: #FFFFFF;
+      --color-border: #E6ECEF;
+      --color-text: #1E2224;
+      --color-text-muted: #5A646A;
+      --color-accent: #1AA5C4;
+      --color-accent-alt: #39D7E8;
+      --radius-base: 16px;
+      --radius-sm: 8px;
+      --shadow-hover: 0 4px 18px -6px rgba(0,0,0,0.10);
+      --transition: 0.25s cubic-bezier(.4,.2,.3,1);
+      --font-stack: system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      --focus-outline: 2px solid #FFB347;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-stack);
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.45;
+      padding: 40px 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
+      gap: 32px;
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    /* ---------- Kachel ---------- */
+    .tile {
+      background: var(--color-bg-tile);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-base);
+      padding: 24px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      isolation: isolate;
+      transition: background var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .tile:focus-within,
+    .tile:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: #D2E3E8;
+      background: #FFFFFF;
+    }
+
+    .tile header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .tile h3 {
+      font-size: 1.1rem;
+      line-height: 1.2;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: .3px;
+    }
+
+    .tile p {
+      margin: 0;
+      font-size: .95rem;
+      color: var(--color-text-muted);
+    }
+
+    .tile a.more {
+      margin-top: 4px;
+      font-size: .85rem;
+      text-decoration: none;
+      color: var(--color-accent);
+      font-weight: 500;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tile a.more:hover {
+      text-decoration: underline;
+    }
+    .tile a.more:focus {
+      outline: none;
+    }
+    .tile a.more:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    /* ---------- Icon Container ---------- */
+    .icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg,var(--color-accent) 0%, var(--color-accent-alt) 85%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .icon-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 70%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    /* ---------- Icon Grundstil ---------- */
+    svg.icon {
+      width: 34px;
+      height: 34px;
+      stroke: #FFFFFF;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      display: block;
+    }
+    svg.icon .beam {
+      stroke: #FFFFFF;
+      stroke-dasharray: 10 6;
+      animation: beamPulse 2s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      svg.icon .beam {
+        animation: none;
+      }
+    }
+    @keyframes beamPulse {
+      0%,100% { stroke-opacity: 1 }
+      50% { stroke-opacity: .25 }
+    }
+
+    /* ---------- Optional kleiner Deko-Trenner ---------- */
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: linear-gradient(90deg,var(--color-accent),var(--color-accent-alt));
+      border-radius: 2px;
+      margin-top: -4px;
+    }
+
+    /* ---------- Fokus Helpers (falls jemand Tab benutzt) ---------- */
+    .tile:focus-within {
+      outline: var(--focus-outline);
+      outline-offset: 2px;
+    }
+
+    /* ---------- Dark Mode (optional, per data-theme="dark" auf <html>) ---------- */
+    html[data-theme="dark"] {
+      --color-bg: #09191D;
+      --color-bg-tile: #102328;
+      --color-border: #1E3A42;
+      --color-text: #E4F3F6;
+      --color-text-muted: #9CB3B9;
+    }
+    html[data-theme="dark"] .tile {
+      border-color: #1E3A42;
+    }
+
+    /* ========== KACHEL VARIANTEN ========== */
+
+    /* Variante 1: Gradient Background */
+    .tile-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+    .tile-gradient:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+      transform: translateY(-2px);
+    }
+    .tile-gradient h3 {
+      color: white;
+    }
+    .tile-gradient p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .tile-gradient .more {
+      color: #FFD700;
+    }
+    .tile-gradient .icon-wrap {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Variante 2: Glassmorphism */
+    .tile-glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .tile-glass:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    .tile-glass .icon-wrap {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Variante 3: Neon Glow */
+    .tile-neon {
+      background: #0a0a0a;
+      border: 2px solid #00ff88;
+      color: #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+    .tile-neon:hover {
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+      transform: scale(1.02);
+    }
+    .tile-neon h3 {
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+    .tile-neon p {
+      color: #88ffbb;
+    }
+    .tile-neon .more {
+      color: #00ff88;
+    }
+    .tile-neon .icon-wrap {
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    }
+
+    /* Variante 4: Image Background */
+    .tile-image {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                  url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="%23ffffff" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="400" height="300" fill="%23000"/><rect width="400" height="300" fill="url(%23grid)"/></svg>');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      border: none;
+    }
+    .tile-image:hover {
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), 
+                  url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="%23ffffff" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="400" height="300" fill="%23000"/><rect width="400" height="300" fill="url(%23grid)"/></svg>');
+      transform: translateY(-3px);
+    }
+    .tile-image h3 {
+      color: white;
+    }
+    .tile-image p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .tile-image .more {
+      color: #ffd700;
+    }
+    .tile-image .icon-wrap {
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+    }
+
+    /* Variante 5: Minimalist White */
+    .tile-minimal {
+      background: white;
+      border: 2px solid #e2e8f0;
+      box-shadow: none;
+    }
+    .tile-minimal:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+      transform: translateY(-1px);
+    }
+    .tile-minimal .icon-wrap {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+    }
+    .tile-minimal .icon-wrap svg {
+      stroke: #64748b;
+    }
+    .tile-minimal .divider {
+      background: #e2e8f0;
+    }
+
+    /* Variante 6: Dark Theme */
+    .tile-dark {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      color: #e2e8f0;
+    }
+    .tile-dark:hover {
+      background: #2d3748;
+      border-color: #4a5568;
+      transform: translateY(-2px);
+    }
+    .tile-dark h3 {
+      color: #f7fafc;
+    }
+    .tile-dark p {
+      color: #a0aec0;
+    }
+    .tile-dark .more {
+      color: #63b3ed;
+    }
+    .tile-dark .icon-wrap {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .tile-dark .divider {
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* Variante 7: Photo Background */
+    .tile-photo {
+      background: linear-gradient(rgba(255, 253, 253, 0.5), rgba(0, 0, 0, 0.7)), 
+                  url('./public/chill-tip.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      border: none;
+      position: relative;
+    }
+    .tile-photo:hover {
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+                  url('./public/chill-tip.jpg');
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    .tile-photo h3 {
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .tile-photo p {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    .tile-photo .more {
+      color: #ffd700;
+      font-weight: 600;
+    }
+    .tile-photo .icon-wrap {
+      background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .tile-photo .divider {
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    }
+  </style>
+</head>
+<body>
+  <!-- 1. Icon Sprite (nur EIN Symbol – minimal). Könnte auch in <head> stehen. -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute; width:0; height:0; overflow:hidden;" aria-hidden="true">
+    <symbol id="icon-laser-technologie" viewBox="0 0 64 64">
+      <!-- Handstück / Basis -->
+      <rect x="6" y="24" width="28" height="16" rx="4" />
+      <path d="M34 32h8l6 4" />
+      <!-- Laserstrahl Segmente -->
+      <path d="M48 36 58 40" class="beam" />
+      <path d="M48 28 58 24" class="beam" />
+      <path d="M48 32h12" class="beam" />
+      <!-- Griff / Versorgung -->
+      <path d="M14 24v-6c0-2 1.4-3 3-3H30" />
+      <!-- Indikator -->
+      <circle cx="18" cy="32" r="2" />
+      <!-- Untere Abstandshalter -->
+      <path d="M12 40v4M18 40v4M24 40v4" />
+    </symbol>
+    
+    <symbol id="icon-intimbereich-maenner" viewBox="0 0 64 64">
+      <!-- Schild-Symbol für Intimbereich -->
+      <path d="M32 4L8 16v24c0 8 8 12 24 12s24-4 24-12V16L32 4z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Laser-Punkt in der Mitte -->
+      <circle cx="32" cy="32" r="3" fill="currentColor"/>
+      <!-- Schutzkontur -->
+      <circle cx="32" cy="32" r="8" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+      <!-- Vertrauens-Symbol -->
+      <path d="M28 32l3 3 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    
+    <symbol id="icon-frauen-laser" viewBox="0 0 64 64">
+      <!-- Herz-Symbol für Frauen -->
+      <path d="M32 56c-8-6-24-18-24-28 0-8 6-14 14-14 4 0 8 2 10 6 2-4 6-6 10-6 8 0 14 6 14 14 0 10-16 22-24 28z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Laser-Symbol in der Mitte -->
+      <circle cx="32" cy="32" r="2" fill="currentColor"/>
+      <!-- Laserstrahlen -->
+      <path d="M32 20l0 8M32 36l0 8M20 32l8 0M36 32l8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </symbol>
+    
+    <symbol id="icon-bauch-laser" viewBox="0 0 64 64">
+      <!-- Ziel-Symbol für Bauch -->
+      <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="32" cy="32" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="4" fill="currentColor"/>
+      <!-- Laser-Pfeile -->
+      <path d="M12 32l8 0M44 32l8 0M32 12l0 8M32 44l0 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </symbol>
+    
+    <symbol id="icon-beine-laser" viewBox="0 0 64 64">
+      <!-- Bein-Symbol mit Laser -->
+      <path d="M20 16l4 8 4-8M40 16l4 8 4-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M24 24l0 32M40 24l0 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 56l8 0M36 56l8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <!-- Laser-Punkte -->
+      <circle cx="32" cy="40" r="2" fill="currentColor"/>
+      <circle cx="32" cy="48" r="2" fill="currentColor"/>
+      <!-- Laserstrahlen -->
+      <path d="M28 40l8 0M28 48l8 0" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    </symbol>
+    
+    <symbol id="icon-brust-laser" viewBox="0 0 64 64">
+      <!-- Herz-Symbol für Brust mit Schutz -->
+      <path d="M32 56c-8-6-24-18-24-28 0-8 6-14 14-14 4 0 8 2 10 6 2-4 6-6 10-6 8 0 14 6 14 14 0 10-16 22-24 28z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Schutz-Symbol in der Mitte -->
+      <path d="M32 20l8 8-8 8-8-8 8-8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Laser-Punkte -->
+      <circle cx="32" cy="32" r="2" fill="currentColor"/>
+      <circle cx="28" cy="28" r="1" fill="currentColor"/>
+      <circle cx="36" cy="28" r="1" fill="currentColor"/>
+    </symbol>
+    
+    <symbol id="icon-gesicht-laser" viewBox="0 0 64 64">
+      <!-- Gesicht-Symbol mit Laser -->
+      <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Augen -->
+      <circle cx="26" cy="28" r="2" fill="currentColor"/>
+      <circle cx="38" cy="28" r="2" fill="currentColor"/>
+      <!-- Nase -->
+      <path d="M32 32l0 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Mund -->
+      <path d="M28 40c0-2 2-4 4-4s4 2 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Laser-Punkte -->
+      <circle cx="32" cy="32" r="1" fill="currentColor"/>
+      <circle cx="24" cy="24" r="1" fill="currentColor"/>
+      <circle cx="40" cy="24" r="1" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+  <main class="grid">
+    <!-- Original Kachel -->
+    <article class="tile" aria-labelledby="tile-tech-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-tech-head">Präzisions‑Diodentechnologie</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Fokussierte Wellenlänge trifft gezielt Melanin im Haarfollikel. Höhere Effizienz und geringere Streuverluste
+        als breitbandiges IPL – Grundlage für planbare Reduktion.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über die Technologie lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 1: Gradient Background -->
+    <article class="tile tile-gradient" aria-labelledby="tile-gradient-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-gradient-head">Gradient Design</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Moderne Gradient-Hintergründe mit Glasmorphismus-Effekten. Perfekt für moderne Web-Designs und 
+        Premium-Branding.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Gradient Design lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 2: Glassmorphism -->
+    <article class="tile tile-glass" aria-labelledby="tile-glass-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-glass-head">Glassmorphism</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Transparente Glaseffekte mit Backdrop-Filter. Schafft Tiefe und moderne Ästhetik durch 
+        geschickte Verwendung von Transparenz.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Glassmorphism lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 3: Neon Glow -->
+    <article class="tile tile-neon" aria-labelledby="tile-neon-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-neon-head">Neon Glow</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Futuristische Neon-Effekte mit leuchtenden Rändern. Ideal für Gaming, Tech oder 
+        avantgardistische Marken.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Neon Design lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 4: Image Background -->
+    <article class="tile tile-image" aria-labelledby="tile-image-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-image-head">Image Background</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Hintergrundbilder mit Overlay-Effekten. Schafft visuelles Interesse und 
+        erzählt eine Geschichte durch Bilder.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Image Design lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 5: Minimalist White -->
+    <article class="tile tile-minimal" aria-labelledby="tile-minimal-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-minimal-head">Minimalist</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Sauberes, minimalistisches Design mit Fokus auf Typografie und Weißraum. 
+        Perfekt für professionelle Anwendungen.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Minimal Design lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 6: Dark Theme -->
+    <article class="tile tile-dark" aria-labelledby="tile-dark-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-dark-head">Dark Theme</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Elegantes Dark Mode Design mit subtilen Farbakzenten. Schont die Augen und 
+        wirkt modern und professionell.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Dark Theme lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Variante 7: Photo Background -->
+    <article class="tile tile-photo" aria-labelledby="tile-photo-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-laser-technologie"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-photo-head">Photo Background</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Echte Fotos als Hintergrund mit elegantem Overlay. Schafft emotionale Verbindung 
+        und visuelles Storytelling durch authentische Bilder.
+      </p>
+
+      <a class="more" href="#" aria-label="Mehr über Photo Design lesen">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Intimbereich Männer -->
+    <article class="tile" aria-labelledby="tile-intimbereich-maenner-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-intimbereich-maenner"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-intimbereich-maenner-head">Laser Intimbereich Männer – Parametrierung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Individuelle Anpassung der Laser-Parameter speziell für männliche Haut und Haarstruktur im Intimbereich. 
+        Moderne Diodenlaser-Technologie mit integrierter Kontaktkühlung für maximale Effizienz und Komfort.
+      </p>
+
+      <a class="more" href="/maenner/intimbereich" aria-label="Mehr über Laser Intimbereich für Männer erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Frauen Laserhaarentfernung -->
+    <article class="tile" aria-labelledby="tile-frauen-laser-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-frauen-laser"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-frauen-laser-head">Frauen Laserhaarentfernung – Ganzkörperbehandlung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Professionelle Laser-Haarentfernung für alle weiblichen Körperbereiche. Von Gesicht bis Beine – 
+        individuelle Behandlung mit modernster Diodenlaser-Technologie für dauerhafte Haarreduktion.
+      </p>
+
+      <a class="more" href="/frauen" aria-label="Mehr über Frauen Laserhaarentfernung erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Bauch Laserhaarentfernung -->
+    <article class="tile" aria-labelledby="tile-bauch-laser-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-bauch-laser"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-bauch-laser-head">Laser Haarentfernung Bauch – Präzise Behandlung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Spezialisierte Laser-Behandlung für empfindliche Bauchbereiche. Individuelle Parameter für verschiedene 
+        Haardicken und Hautzustände mit integrierter Kontaktkühlung für maximalen Komfort.
+      </p>
+
+      <a class="more" href="/bauch" aria-label="Mehr über Laser Haarentfernung am Bauch erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Beine Laserhaarentfernung -->
+    <article class="tile" aria-labelledby="tile-beine-laser-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-beine-laser"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-beine-laser-head">Laser Haarentfernung Beine – Großflächige Behandlung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Effektive Laser-Behandlung für Unter- und Oberschenkel. Mehrwellenlängen-Technologie mit 
+        selektiver Phototermolyse für dauerhafte Haarreduktion an den Beinen.
+      </p>
+
+      <a class="more" href="/beine" aria-label="Mehr über Laser Haarentfernung an den Beinen erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Brust Laserhaarentfernung -->
+    <article class="tile" aria-labelledby="tile-brust-laser-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-brust-laser"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-brust-laser-head">Laser Haarentfernung Brust – Schonende Behandlung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Spezialisierte Laser-Behandlung für empfindliche Brustbereiche. Kontaktkühlung und angepasste 
+        Parameter für schonende Haarreduktion mit maximaler Sicherheit und Komfort.
+      </p>
+
+      <a class="more" href="/brust" aria-label="Mehr über Laser Haarentfernung an der Brust erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+
+    <!-- Neue Kachel: Gesicht Laserhaarentfernung -->
+    <article class="tile" aria-labelledby="tile-gesicht-laser-head">
+      <header>
+        <div class="icon-wrap" aria-hidden="true">
+          <svg class="icon">
+            <use href="#icon-gesicht-laser"></use>
+          </svg>
+        </div>
+        <div>
+          <h3 id="tile-gesicht-laser-head">Laser Haarentfernung Gesicht – Präzise Behandlung</h3>
+          <div class="divider" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <p>
+        Spezialisierte Laser-Behandlung für sensible Gesichtsbereiche. Individuelle Parameter für 
+        Oberlippe, Kinn und Wangen mit schonender Kontaktkühlung für optimale Ergebnisse.
+      </p>
+
+      <a class="more" href="/gesicht" aria-label="Mehr über Laser Haarentfernung im Gesicht erfahren">
+        Mehr erfahren →
+      </a>
+    </article>
+  </main>
+
+  <!-- Alexandrit Laser Hero Section - Light Version -->
+  <section class="alexandrit-hero-light">
+    <div class="alexandrit-container">
+      <div class="alexandrit-grid">
+        <!-- Linke Spalte: Content -->
+        <div class="alexandrit-content">
+          <div class="alexandrit-badge">
+            <span class="badge-text">Neueste Technologie</span>
+            <span class="badge-icon">⚡</span>
+          </div>
+          
+          <h2 class="alexandrit-title">
+            Alexandrit-Laser
+            <span class="title-highlight">755 nm</span>
+          </h2>
+          
+          <p class="alexandrit-subtitle">
+            Präzise Wellenlänge für optimale Melanin-Absorption
+          </p>
+          
+          <div class="alexandrit-features">
+            <div class="feature-item">
+              <div class="feature-icon">🎯</div>
+              <div class="feature-text">
+                <strong>Selektive Phototermolyse</strong>
+                <span>Gezielte Haarfollikel-Behandlung</span>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">❄️</div>
+              <div class="feature-text">
+                <strong>Integrierte Kühlung</strong>
+                <span>Maximaler Komfort bei der Behandlung</span>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              <div class="feature-text">
+                <strong>Höchste Effizienz</strong>
+                <span>Für helle bis mittlere Hauttypen</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="alexandrit-cta">
+            <button class="cta-primary">
+              <span>Jetzt beraten lassen</span>
+              <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            <button class="cta-secondary">
+              <span>Mehr erfahren</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Rechte Spalte: Bild mit Overlay -->
+        <div class="alexandrit-image-container">
+          <div class="image-wrapper">
+            <img 
+              src="/alexandrit-laser-light-blue.png" 
+              alt="Alexandrit Laser Technologie" 
+              class="alexandrit-image"
+            />
+            
+            <!-- Overlay mit Schlagwörtern -->
+            <div class="image-overlay">
+              <div class="overlay-tag tag-1">
+                <span class="tag-text">755 nm</span>
+                <div class="tag-pulse"></div>
+              </div>
+              
+              <div class="overlay-tag tag-2">
+                <span class="tag-text">Melanin</span>
+                <div class="tag-pulse"></div>
+              </div>
+              
+              <div class="overlay-tag tag-3">
+                <span class="tag-text">Präzision</span>
+                <div class="tag-pulse"></div>
+              </div>
+              
+              <div class="overlay-tag tag-4">
+                <span class="tag-text">Kühlung</span>
+                <div class="tag-pulse"></div>
+              </div>
+            </div>
+            
+            <!-- Laser-Effekt Overlay -->
+            <div class="laser-effect">
+              <div class="laser-line laser-1"></div>
+              <div class="laser-line laser-2"></div>
+              <div class="laser-line laser-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* Alexandrit Hero Styles - Light Version */
+    .alexandrit-hero-light {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .alexandrit-hero-light::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 80%, rgba(147, 51, 234, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    /* Dark Version (behalten für Vergleich) */
+    .alexandrit-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .alexandrit-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    .alexandrit-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .alexandrit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    
+    .alexandrit-content {
+      color: #1e293b;
+    }
+    
+    .alexandrit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 50px;
+      padding: 8px 16px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .badge-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3b82f6;
+    }
+    
+    .badge-icon {
+      font-size: 16px;
+      animation: pulse 2s infinite;
+    }
+    
+    .alexandrit-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .title-highlight {
+      display: block;
+      font-size: 2.5rem;
+      color: #f59e0b;
+      text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .alexandrit-subtitle {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    
+    .alexandrit-features {
+      margin-bottom: 40px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateX(8px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+      font-size: 24px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 12px;
+    }
+    
+    .feature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .feature-text strong {
+      color: #1e293b;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .feature-text span {
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    .alexandrit-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .cta-primary, .cta-secondary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .cta-primary {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+    }
+    
+    .cta-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      color: #1e293b;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .cta-secondary:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-arrow {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+    }
+    
+    .cta-primary:hover .cta-arrow {
+      transform: translateX(4px);
+    }
+    
+    .alexandrit-image-container {
+      position: relative;
+    }
+    
+    .image-wrapper {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .alexandrit-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    
+    .image-wrapper:hover .alexandrit-image {
+      transform: scale(1.05);
+    }
+    
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+    
+    .overlay-tag {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 25px;
+      padding: 8px 16px;
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 600;
+      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tag-1 {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+    
+    .tag-2 {
+      top: 30%;
+      right: 15%;
+      animation-delay: 0.5s;
+    }
+    
+    .tag-3 {
+      bottom: 30%;
+      left: 15%;
+      animation-delay: 1s;
+    }
+    
+    .tag-4 {
+      bottom: 20%;
+      right: 10%;
+      animation-delay: 1.5s;
+    }
+    
+    .tag-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      border-radius: 25px;
+      border: 2px solid #3b82f6;
+      animation: pulse-ring 2s infinite;
+    }
+    
+    .laser-effect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+    
+    .laser-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+      animation: laser-sweep 4s infinite;
+    }
+    
+    .laser-1 {
+      top: 25%;
+      left: -100%;
+      width: 100%;
+      animation-delay: 0s;
+    }
+    
+    .laser-2 {
+      top: 50%;
+      left: -100%;
+      width: 100%;
+      animation-delay: 1.3s;
+    }
+    
+    .laser-3 {
+      top: 75%;
+      left: -100%;
+      width: 100%;
+      animation-delay: 2.6s;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-ring {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes laser-sweep {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .alexandrit-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      
+      .alexandrit-title {
+        font-size: 2.5rem;
+      }
+      
+      .title-highlight {
+        font-size: 2rem;
+      }
+      
+      .alexandrit-cta {
+        flex-direction: column;
+      }
+      
+      .cta-primary, .cta-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</body>
+</html>
+

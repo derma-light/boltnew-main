@@ -1,0 +1,96 @@
+import React from 'react';
+import { ArrowRight, Clock, Target, Shield, Star, Award, Zap } from 'lucide-react';
+
+const FrauenHero = () => {
+  const benefitElements = [
+    { icon: Clock, text: "Dauerhafte Reduktion statt ständiger Rasur" },
+    { icon: Target, text: "Kontaktgekühlt & hautschonend" },
+    { icon: Shield, text: "Transparente Planung & Intervalle" }
+  ];
+
+  const trustElements = [
+    { icon: Star, text: "Seit 2005 Erfahrung" },
+    { icon: Award, text: "Kontaktkühlung" },
+    { icon: Zap, text: "Individuelle Parameter" }
+  ];
+
+  return (
+    <section className="relative bg-gray-50 min-h-[90vh] flex items-center overflow-hidden">
+      {/* Animated Alexandrit Laser Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/alexandrit-laser-light-blue.png"
+          alt="Alexandrit-Laser Technologie 755nm - Animiertes Bild zeigt Laserstrahl, Haarfollikel, Melanin-Absorption und Präzision"
+          className="w-full h-full object-cover opacity-20 alexandrit-laser-image"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/90 to-white/60"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 lg:px-6">
+        <div className="max-w-4xl">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
+            Laser-Haarentfernung · Frauen
+          </div>
+
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Glatte Haut – sicher, planbar, dauerhaft
+          </h1>
+          
+          <h2 className="text-2xl md:text-3xl text-gray-800 font-semibold mb-6">
+            Alles Wichtige zur Laser-Haarentfernung für Frauen: Wie es funktioniert, wer geeignet ist und welche Zonen sich behandeln lassen
+          </h2>
+          
+          <p className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed">
+            Professionelle Laser-Haarentfernung für Frauen in Hamburg: Von Gesicht bis Beine – 
+            individuelle Behandlung mit modernster 808-nm-Diodenlaser-Technologie für dauerhafte Haarreduktion.
+          </p>
+
+          {/* Benefits Pills */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {benefitElements.map((element, index) => (
+              <div key={index} className="flex items-center p-4 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <element.icon className="w-6 h-6 text-blue-600 mr-3" />
+                <span className="font-medium text-gray-700">{element.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <a 
+              href="/beratung" 
+              className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Kostenlose Erstberatung buchen
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </a>
+            <a 
+              href="/preise-haarentfernung" 
+              className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-all duration-200"
+            >
+              Preise ansehen
+            </a>
+          </div>
+
+          {/* Trust Elements */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {trustElements.map((element, index) => (
+              <div key={index} className="flex items-center text-center p-4 bg-blue-50/80 backdrop-blur-sm rounded-xl border border-blue-200 hover:bg-blue-100/80 hover:shadow-lg transition-all duration-300">
+                <element.icon className="w-5 h-5 text-blue-700 mr-2" />
+                <span className="text-sm font-medium text-blue-800">{element.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Disclaimer */}
+          <p className="text-sm text-gray-600 italic mt-8">
+            *Ergebnisse variieren je nach Haar- und Hauttyp sowie hormonellen und individuellen Faktoren.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FrauenHero;

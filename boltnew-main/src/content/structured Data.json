@@ -1,0 +1,79 @@
+<script type="application/ld+json">
+   {
+     "@context":"https://schema.org",
+     "@type":"BreadcrumbList",
+     "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://dermalight-hamburg.de/"},
+      {"@type":"ListItem","position":2,"name":"Frauen","item":"https://dermalight-hamburg.de/html-gpt5/frauen/bikinizone.html"},
+      {"@type":"ListItem","position":3,"name":"Achseln","item":"https://dermalight-hamburg.de/html-gpt5/frauen/achseln.html"}
+     ]
+   }
+   </script>
+ 
+   <!-- FAQ Schema -->
+   <script type="application/ld+json">
+   {
+     "@context":"https://schema.org",
+     "@type":"FAQPage",
+     "mainEntity":[
+       {
+         "@type":"Question",
+         "name":"Wie viele Sitzungen brauche ich für die Achseln?",
+         "acceptedAnswer":{"@type":"Answer","text":"In der Regel 6–8 Sitzungen im Abstand von 4–8 Wochen. Hormonelle Faktoren, Haarstärke und individuelle Zyklen können die Anzahl beeinflussen. Vereinzelte Auffrischungen (Erhaltung) sind später normal."}
+       },
+       {
+         "@type":"Question",
+         "name":"Wie lange dauert eine Laser-Behandlung der Achseln?",
+         "acceptedAnswer":{"@type":"Answer","text":"Die eigentliche Laserzeit liegt meist bei 5–10 Minuten. Inklusive kurzer Vorbereitung (Hautcheck, Abdecken von Muttermalen) beträgt der Aufenthalt nur wenige Minuten."}
+       },
+       {
+         "@type":"Question",
+         "name":"Ist die Behandlung unter den Achseln schmerzhaft?",
+         "acceptedAnswer":{"@type":"Answer","text":"Die meisten empfinden ein kurzes, warmes Prickeln. Moderne Kontaktkühlung mindert die Wärme. Stärker pigmentierte, dickere Haare können kurzfristig intensiver spürbar sein."}
+       },
+       {
+         "@type":"Question",
+         "name":"Was muss ich vor dem Termin beachten?",
+         "acceptedAnswer":{"@type":"Answer","text":"Die Achseln 12–24 Stunden vorher glatt rasieren. Kein Deo mit Aluminium oder Duftstoffen direkt vor dem Termin, keine Wachse/Epilierer ≥ 4 Wochen, kein intensives Sonnen/ Solarium 2 Wochen zuvor."}
+       },
+       {
+         "@type":"Question",
+         "name":"Wann sehe ich erste Ergebnisse?",
+         "acceptedAnswer":{"@type":"Answer","text":"Nach 1–2 Sitzungen wächst ein Teil der Haare langsamer und feiner nach. Etwa 2–3 Wochen nach jeder Sitzung fallen viele behandelte Haare von selbst aus (Shedding-Phase)."}
+       },
+       {
+         "@type":"Question",
+         "name":"Für welche Haar- und Hauttypen ist es geeignet?",
+         "acceptedAnswer":{"@type":"Answer","text":"Mit 755 nm (Alexandrit) & 808 nm (Diodenlaser) decken wir hellere bis mittlere Hauttypen mit dunkleren Haaren sehr effektiv ab. Sehr helle, graue oder rote Haare enthalten zu wenig Melanin für eine effiziente Absorption."}
+       },
+       {
+         "@type":"Question",
+         "name":"Was kostet die Laser Haarentfernung der Achseln?",
+         "acceptedAnswer":{"@type":"Answer","text":"Aktuelle Preise findest du transparent in unserer Preisliste. Pakete (z. B. Achseln + Intimbereich) reduzieren den Einzelpreis pro Zone."}
+       }
+     ]
+   }
+   </script>
+ 
+   <!-- Service Schema (optional) -->
+   <script type="application/ld+json">
+   {
+     "@context":"https://schema.org",
+     "@type":"Service",
+     "serviceType":"Laser Haarentfernung Achseln",
+     "provider":{
+       "@type":"HealthAndBeautyBusiness",
+       "name":"Derma Light Haarentfernung",
+       "telephone":"+49-40-55435357",
+       "address":{
+         "@type":"PostalAddress",
+         "streetAddress":"Gertrudenkirchhof 10",
+         "postalCode":"20095",
+         "addressLocality":"Hamburg",
+         "addressCountry":"DE"
+       }
+     },
+     "areaServed":{"@type":"AdministrativeArea","name":"Hamburg"},
+     "description":"Professionelle Laser Haarentfernung der Achseln in Hamburg mit 755 & 808 nm Technologie zur dauerhaften Reduktion störender Achselhaare."
+   }
+   </script>
